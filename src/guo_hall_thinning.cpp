@@ -15,7 +15,7 @@ convert_to_line::convert_to_line(){
 
   //grab the parameters
   ros::NodeHandle private_node_handle_("~");
-  private_node_handle_.param<std::string>("image_topic", image_topic, "/image_hsv");
+  private_node_handle_.param<std::string>("image_topic_thinning", image_topic, "/image_hsv");
     
   //initialize the publishers and subscribers
   image_pub = nh.advertise<sensor_msgs::Image>("image_thin", 1000);
@@ -141,11 +141,11 @@ void thinningGuoHall(cv::Mat& im)
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "thining_algorithm");
+  ros::init(argc, argv, "guo_hall_thining_algorithm");
 
   convert_to_line img_to_line = convert_to_line();
   
-  ROS_INFO("convert to line node started!");	
+  ROS_INFO("guo hall thinning node started!");	
 
   ros::Rate loop_rate(10);
 

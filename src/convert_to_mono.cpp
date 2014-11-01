@@ -15,7 +15,7 @@ convert_to_mono::convert_to_mono(){
 
   //grab the parameters
   ros::NodeHandle private_node_handle_("~");
-  private_node_handle_.param<std::string>("image_topic", image_topic, "/camera/rgb/image_raw");
+  private_node_handle_.param<std::string>("image_topic_hsv", image_topic, "/camera/rgb/image_raw");
   private_node_handle_.param<int>("hue_min", hue_min, 100);
   private_node_handle_.param<int>("hue_max", hue_max, 120);
   private_node_handle_.param<int>("sat_min", sat_min, 100);
@@ -86,11 +86,11 @@ void convert_to_mono::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "rgb_line_follower");
+  ros::init(argc, argv, "convert_to_mono");
 
   convert_to_mono img_to_mono = convert_to_mono();
   
-  ROS_INFO("rgb line follower node started!");	
+  ROS_INFO("Filter image for tape color node started!");	
 
   ros::Rate loop_rate(10);
 
