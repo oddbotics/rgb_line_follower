@@ -1,12 +1,12 @@
 /*
- * \rgb_line_follower_node.cpp
- * \takes a image and converts it to a trajectory for the robot to follow
+ * \ros_to_cv_test.cpp
+ * \takes a image and converts it to a cv image and displays it
  *
  * \author Chris Dunkers, CMU - cmdunkers@cmu.edu
  * \date October 31, 2014
  */
 
-#include "rgb_line_follower/rgb_line_follower_node.h"
+#include "rgb_line_follower/ros_to_cv_test.h"
 
 rgb_line_follower::rgb_line_follower(){
 	
@@ -42,8 +42,7 @@ void rgb_line_follower::update_image(const sensor_msgs::Image::ConstPtr& img_msg
       ROS_ERROR("cv_bridge exception: %s", e.what());
       return;
     }
-    
-    cv::circle(cv_ptr->image, cv::Point(cv_ptr->image.rows/2, cv_ptr->image.cols/2), 10, CV_RGB(255,0,0));
+    cv::circle(cv_ptr->image, cv::Point(cv_ptr->image.cols/2, cv_ptr->image.rows/2), 10, CV_RGB(255,0,0));
     
     // Update GUI Window
     cv::imshow(OPENCV_WINDOW, cv_ptr->image);
@@ -55,11 +54,11 @@ void rgb_line_follower::update_image(const sensor_msgs::Image::ConstPtr& img_msg
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "rgb_line_follower");
+  ros::init(argc, argv, "ros_to_cv_test");
 
   rgb_line_follower line_folower = rgb_line_follower();
   
-  ROS_INFO("rgb line follower node started!");	
+  ROS_INFO("ros to cv test started!");	
 
   ros::Rate loop_rate(10);
 

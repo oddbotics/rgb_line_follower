@@ -1,12 +1,12 @@
 /*
- * \rgb_line_follower_node.h
+ * \ros_to_cv_test.h
  *
  * \author Chris Dunkers, CMU - cmdunkers@cmu.edu
  * \date October 31, 2014
  */
 
-#ifndef RGB_LINE_FOLLOWER_NODE_H_
-#define RGB_LINE_FOLLOWER_NODE_H_
+#ifndef ROS_TO_CV_TEST_H_
+#define ROS_TO_CV_TEST_H_
 
 #include "ros/ros.h"
 #include "sensor_msgs/Image.h"
