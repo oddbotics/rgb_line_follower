@@ -28,9 +28,14 @@ class convert_to_line
   public:
     convert_to_line(); 
     ~convert_to_line();
+    
+    void make_thin_image();
 
   private:
 	std::string image_topic;
+	
+	cv::Mat thin_image;
+	std::string frame;
     
     ros::Subscriber image_sub;
     ros::Publisher image_pub;

@@ -41,19 +41,39 @@ void convert_to_line::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
       return;
     }
     
+    cv_ptr->image.copyTo(thin_image);
+    frame = img_msg->header.frame_id;
+    
     //run the thinning algorithm
-    cv::Mat ThinImage;
-	cv::cvtColor(cv_ptr->image, ThinImage, CV_BGR2GRAY);
-    thinningGuoHall(ThinImage);
+    //cv::Mat ThinImage;
+	//cv::cvtColor(cv_ptr->image, ThinImage, CV_BGR2GRAY);
+    //thinningGuoHall(ThinImage);
 	
 	//make the cv image to a ros message
-	cv_bridge::CvImage out_msg;
-    out_msg.header.frame_id   = img_msg->header.frame_id; // Same tf frame as input image
-    out_msg.header.stamp = ros::Time::now();
-    out_msg.encoding = sensor_msgs::image_encodings::MONO8; // black and white
-    out_msg.image = ThinImage; //cv::Mat image
+	//cv_bridge::CvImage out_msg;
+    //out_msg.header.frame_id   = img_msg->header.frame_id; // Same tf frame as input image
+    //out_msg.header.stamp = ros::Time::now();
+    //out_msg.encoding = sensor_msgs::image_encodings::MONO8; // black and white
+    //out_msg.image = ThinImage; //cv::Mat image
 
-    image_pub.publish(out_msg.toImageMsg());
+    //image_pub.publish(out_msg.toImageMsg());
+}
+
+void convert_to_line::make_thin_image(){
+	if (!thin_image.empty()) {	
+		cv::Mat ThinImage;
+		cv::cvtColor(thin_image, ThinImage, CV_BGR2GRAY);
+		thinningGuoHall(ThinImage);
+		
+		//make the cv image to a ros message
+		cv_bridge::CvImage out_msg;
+		out_msg.header.frame_id   = frame; // Same tf frame as input image
+		out_msg.header.stamp = ros::Time::now();
+		out_msg.encoding = sensor_msgs::image_encodings::MONO8; // black and white
+		out_msg.image = ThinImage; //cv::Mat image
+
+		image_pub.publish(out_msg.toImageMsg());	
+	}
 }
 
 
@@ -131,6 +151,7 @@ int main(int argc, char **argv)
 
   while (ros::ok())
   {    
+	img_to_line.make_thin_image(); 
     ros::spinOnce();
     loop_rate.sleep();
   }
