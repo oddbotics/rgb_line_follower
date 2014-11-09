@@ -21,6 +21,7 @@ thin_to_lines::thin_to_lines(){
   private_node_handle_.param<int>("threshold", threshold, 50);
   private_node_handle_.param<int>("minLineLength", minLineLength, 50);
   private_node_handle_.param<int>("maxLineGap", maxLineGap, 10);
+  private_node_handle_.param<bool>("display", display, false);
     
   //initialize the publishers and subscribers
   lines_pub = nh.advertise<oddbot_msgs::Lines>("lines", 1000);
@@ -32,15 +33,6 @@ thin_to_lines::thin_to_lines(){
 
 thin_to_lines::~thin_to_lines(){
 	cv::destroyWindow(OPENCV_WINDOW);
-}
-
-void thin_to_lines::check_int8(int * val){
-	if(*val > 255){
-		*val = 255;
-	} 
-	if(*val < 0){
-		*val = 0;
-	} 
 }
 
 void thin_to_lines::update_lines(const sensor_msgs::Image::ConstPtr& img_msg){
@@ -57,14 +49,7 @@ void thin_to_lines::update_lines(const sensor_msgs::Image::ConstPtr& img_msg){
 	
     //declare opencv images
 	cv::Mat LinesImage;
-	// cv::Mat ThreshImage;
-
-	//Transform the colors into HSV
-	// cvtColor(cv_ptr->image,HSVImage,CV_BGR2HSV);
-	
-	//threshold based on the tape trying to follow
-	//void inRange(InputArray src, InputArray lowerb, InputArray upperb, OutputArray dst)
-	// inRange(HSVImage,cv::Scalar(100,100,90),cv::Scalar(120,200,255),ThreshImage);
+	cv::Mat displayImage;
 
 	//Transform the thin into lines
 	vector<Vec4i> lines;
@@ -74,12 +59,18 @@ void thin_to_lines::update_lines(const sensor_msgs::Image::ConstPtr& img_msg){
 	Canny(cv_ptr->image, LinesImage, 50, 200, 3);	
 	HoughLinesP(LinesImage, lines, rho, theta, threshold, minLineLength, maxLineGap );
 	
-	//now display the result by drawing the lines
-	//for( size_t i = 0; i < lines.size(); i++ )
-	//{
-	//  Vec4i l = lines[i];
-  	//  line( cdst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,255), 3, CV_AA);
-	//}    	
+	if(display == true){
+		//now display the result by drawing the lines
+		cvtColor(LinesImage, displayImage, CV_GRAY2BGR);
+		for( size_t i = 0; i < lines.size(); i++ )
+		{
+		  Vec4i l = lines[i];
+		  line(displayImage, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,255), 3, CV_AA);
+		}    	
+	
+		imshow("source", cv_ptr->image);
+		imshow("detected lines", displayImage);
+    }
 	
 	//convert lines vector to Lines message type
 	oddbot_msgs::Lines lines_msg;

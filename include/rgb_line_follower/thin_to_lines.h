@@ -36,13 +36,12 @@ class thin_to_lines
 	int threshold; 	
 	int minLineLength;
 	int maxLineGap;	
-	
 	std::string image_topic;
+    bool display;
     
     ros::Subscriber image_sub;
     ros::Publisher lines_pub;
     
-    void check_int8(int * val);
     void update_lines(const sensor_msgs::Image::ConstPtr& img_msg); 
 };
 
