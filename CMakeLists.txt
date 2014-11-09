@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
+  oddbot_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -110,6 +111,7 @@ add_executable(ros_to_cv_test src/ros_to_cv_test.cpp)
 add_executable(convert_to_mono src/convert_to_mono.cpp)
 add_executable(zhang_suen_thinning src/zhang_suen_thinning.cpp)
 add_executable(guo_hall_thinning src/guo_hall_thinning.cpp)
+add_executable(thin_to_lines src/thin_to_lines.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -133,6 +135,10 @@ target_link_libraries(zhang_suen_thinning
 )
 
 target_link_libraries(guo_hall_thinning
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(thin_to_lines
   ${catkin_LIBRARIES}
 )
 
