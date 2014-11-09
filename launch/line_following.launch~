@@ -1,0 +1,35 @@
+<launch>    
+    <arg name="image_topic_hsv" value="/camera/rgb/image_raw" />
+    <arg name="hue_min" value="100" />
+    <arg name="hue_max" value="120" />
+    <arg name="sat_min" value="100" />
+    <arg name="sat_max" value="200" />
+	<arg name="val_min" value="90" />
+    <arg name="val_max" value="255" />
+	<arg name="image_topic_thinning" value="/image_hsv" />
+	<arg name="use_zhang_suen_thinning_algo" value="true" />
+	<arg name="use_guo_hall_thinning_algo" value="false" />
+    
+    <node pkg="rgb_line_follower" type="convert_to_mono" name="convert_to_mono" output="screen">
+        <param name="image_topic_hsv" type="string" value="$(arg image_topic_hsv)" />
+        <param name="hue_max" type="int" value="$(arg hue_max)" />
+        <param name="hue_min" type="int" value="$(arg hue_min)" />
+		<param name="sat_max" type="int" value="$(arg sat_max)" />
+        <param name="sat_min" type="int" value="$(arg sat_min)" />
+		<param name="val_max" type="int" value="$(arg val_max)" />
+        <param name="val_min" type="int" value="$(arg val_min)" />
+    </node>
+	
+	<group if="$(arg use_zhang_suen_thinning_algo)">
+    	<node pkg="rgb_line_follower" type="zhang_suen_thinning" name="zhang_suen_thinning" output="screen">
+			<param name="image_topic_thinning" type="string" value="$(arg image_topic_thinning)" />
+		</node>
+	</group>
+
+	<group if="$(arg use_guo_hall_thinning_algo)">
+    	<node pkg="rgb_line_follower" type="guo_hall_thinning" name="guo_hall_thinning" output="screen">
+			<param name="image_topic_thinning" type="string" value="$(arg image_topic_thinning)" />
+		</node>
+	</group
+
+</launch>
