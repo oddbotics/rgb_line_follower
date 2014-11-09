@@ -1,4 +1,6 @@
 <launch>    
+	<arg name="use_kinect" value="true" />
+	<arg name="use_xtion" value="false" />
     <arg name="image_topic_hsv" value="/camera/rgb/image_raw" />
     <arg name="hue_min" value="100" />
     <arg name="hue_max" value="120" />
@@ -9,7 +11,24 @@
 	<arg name="image_topic_thinning" value="/image_hsv" />
 	<arg name="use_zhang_suen_thinning_algo" value="true" />
 	<arg name="use_guo_hall_thinning_algo" value="false" />
+	<arg name="image_topic_lines" value="/image_thin" />
+	<arg name="rho" value="1" />
+	<arg name="theta" value="0.0174532925" />
+	<arg name="threshold" value="50" />
+	<arg name="minLineLength" value="50" />
+	<arg name="maxLineGap" value="10" />
+	<arg name="display" value="false" />
+
     
+	<group if="$(arg use_kinect)">
+		<include file="$(find freenect_launch)/launch/examples/freenect-registered-xyzrgb.launch" />
+	</group>
+
+	<group if="$(arg use_xtion)">
+		<include file="$(find openni2_launch)/launch/openni2.launch" />
+	</group>
+
+
     <node pkg="rgb_line_follower" type="convert_to_mono" name="convert_to_mono" output="screen">
         <param name="image_topic_hsv" type="string" value="$(arg image_topic_hsv)" />
         <param name="hue_max" type="int" value="$(arg hue_max)" />
@@ -31,5 +50,15 @@
 			<param name="image_topic_thinning" type="string" value="$(arg image_topic_thinning)" />
 		</node>
 	</group>
+
+	<node pkg="rgb_line_follower" type="thin_to_lines" name="thin_to_lines" output="screen">
+        <param name="image_topic_lines" type="string" value="$(arg image_topic_lines)" />
+		<param name="rho" type="int" value="$(arg rho)" />
+        <param name="theta" type="double" value="$(arg theta)" />
+        <param name="threshold" type="int" value="$(arg threshold)" />
+		<param name="minLineLength" type="int" value="$(arg minLineLength)" />
+        <param name="maxLineGap" type="int" value="$(arg maxLineGap)" />
+        <param name="display" type="bool" value="$(arg display)" />
+    </node>
 
 </launch>
