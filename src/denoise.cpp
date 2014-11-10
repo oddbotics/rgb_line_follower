@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "denoise");
 
-  denoise denoise_img() = denoise();
+  denoise denoise_img = denoise();
   
   ROS_INFO("Filter image for tape color node started!");	
 

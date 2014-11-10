@@ -75,7 +75,7 @@ void denoise::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
         //Denoise image
         //void fastNlMeansDenoising(InputArray src, OutputArray dst, float h=3, int templateWindowSize=7, 
 	//int searchWindowSize=21 )
-	fastNlMeansDenoising(HSVImage, DenoiseImage)
+	fastNlMeansDenoising(HSVImage, DenoiseImage);
 
 	//threshold based on the tape trying to follow
 	//void inRange(InputArray src, InputArray lowerb, InputArray upperb, OutputArray dst)

@@ -18,6 +18,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <std_msgs/Empty.h>
 #include "opencv2/core/core.hpp"
+#include "opencv2/photo/photo.hpp"
 
 static const std::string OPENCV_WINDOW = "Image window";
 
