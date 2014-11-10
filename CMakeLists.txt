@@ -112,7 +112,7 @@ add_executable(convert_to_mono src/convert_to_mono.cpp)
 add_executable(zhang_suen_thinning src/zhang_suen_thinning.cpp)
 add_executable(guo_hall_thinning src/guo_hall_thinning.cpp)
 add_executable(thin_to_lines src/thin_to_lines.cpp)
-
+add_executable(denoise src/denoise.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(rgb_line_follower_node rgb_line_follower_generate_messages_cpp)
@@ -142,6 +142,9 @@ target_link_libraries(thin_to_lines
   ${catkin_LIBRARIES}
 )
 
+target_link_libraries(denoise
+  ${catkin_LIBRARIES}
+)
 #############
 ## Install ##
 #############
