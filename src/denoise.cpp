@@ -17,20 +17,7 @@ denoise::denoise(){
 
   //grab the parameters
   ros::NodeHandle private_node_handle_("~");
-  private_node_handle_.param<std::string>("image_topic_hsv", image_topic, "/camera/rgb/image_hsv");
-  private_node_handle_.param<int>("hue_min", hue_min, 100);
-  private_node_handle_.param<int>("hue_max", hue_max, 120);
-  private_node_handle_.param<int>("sat_min", sat_min, 100);
-  private_node_handle_.param<int>("sat_max", sat_max, 200);
-  private_node_handle_.param<int>("val_min", val_min, 90);
-  private_node_handle_.param<int>("val_max", val_max, 255);
-  
-  check_int8(&hue_min);
-  check_int8(&hue_max);
-  check_int8(&sat_min);
-  check_int8(&sat_max);
-  check_int8(&val_min);
-  check_int8(&val_max);
+  private_node_handle_.param<std::string>("image_topic_denoise", image_topic, "/image_hsv");
     
   //initialize the publishers and subscribers
   image_pub = nh.advertise<sensor_msgs::Image>("image_denoised", 1000);
@@ -42,15 +29,6 @@ denoise::denoise(){
 
 denoise::~denoise(){
 	cv::destroyWindow(OPENCV_WINDOW);
-}
-
-void denoise::check_int8(int * val){
-	if(*val > 255){
-		*val = 255;
-	} 
-	if(*val < 0){
-		*val = 0;
-	} 
 }
 
 void denoise::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
@@ -68,18 +46,15 @@ void denoise::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
     //declare opencv images
 	cv::Mat HSVImage;
 	cv::Mat DenoiseImage;
-
-	//Transform the colors into HSV
-	cvtColor(cv_ptr->image,HSVImage,CV_BGR2HSV);
 	
-        //Denoise image
-        //void fastNlMeansDenoising(InputArray src, OutputArray dst, float h=3, int templateWindowSize=7, 
+	cv::cvtColor(cv_ptr->image, HSVImage, CV_BGR2GRAY);
+	
+	//Denoise image
+	//void fastNlMeansDenoising(InputArray src, OutputArray dst, float h=3, int templateWindowSize=7, 
 	//int searchWindowSize=21 )
-	fastNlMeansDenoising(HSVImage, DenoiseImage);
-
-	//threshold based on the tape trying to follow
-	//void inRange(InputArray src, InputArray lowerb, InputArray upperb, OutputArray dst)
-	//inRange(HSVImage,cv::Scalar(100,100,90),cv::Scalar(120,200,255),DenoiseImage);
+	fastNlMeansDenoising(HSVImage, DenoiseImage, 70, 3, 5);
+    
+    cv::threshold(DenoiseImage, DenoiseImage, 250, 255, CV_THRESH_BINARY);
     
     // publish modified video stream
     cv_bridge::CvImage out_msg;
@@ -97,7 +72,7 @@ int main(int argc, char **argv)
 
   denoise denoise_img = denoise();
   
-  ROS_INFO("Filter image for tape color node started!");	
+  ROS_INFO("Denoise node started!");	
 
   ros::Rate loop_rate(10);
 
