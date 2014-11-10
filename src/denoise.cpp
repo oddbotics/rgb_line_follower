@@ -52,9 +52,16 @@ void denoise::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
 	//Denoise image
 	//void fastNlMeansDenoising(InputArray src, OutputArray dst, float h=3, int templateWindowSize=7, 
 	//int searchWindowSize=21 )
-	fastNlMeansDenoising(HSVImage, DenoiseImage, 70, 3, 5);
+	//fastNlMeansDenoising(HSVImage, DenoiseImage, 70, 3, 5);
     
-    cv::threshold(DenoiseImage, DenoiseImage, 250, 255, CV_THRESH_BINARY);
+	//Trying Gaussian Blur to lower pixel intensity for random pixels
+	cv::Size kernel_size;
+	kernel_size.width = 7;
+	kernel_size.width = 7;
+	GaussianBlur(HSVImage, DenoiseImage, kernel_size,1,1);
+
+	//High threshold to help limit the images
+        cv::threshold(DenoiseImage, DenoiseImage, 150, 255, CV_THRESH_BINARY);
     
     // publish modified video stream
     cv_bridge::CvImage out_msg;
