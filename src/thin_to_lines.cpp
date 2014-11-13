@@ -21,7 +21,7 @@ thin_to_lines::thin_to_lines(){
   private_node_handle_.param<int>("threshold", threshold, 50);
   private_node_handle_.param<int>("minLineLength", minLineLength, 50);
   private_node_handle_.param<int>("maxLineGap", maxLineGap, 10);
-  private_node_handle_.param<bool>("display", display, false);
+  private_node_handle_.param<bool>("display_lines", display, false);
     
   //initialize the publishers and subscribers
   lines_pub = nh.advertise<oddbot_msgs::Lines>("lines", 1000);
@@ -57,19 +57,19 @@ void thin_to_lines::update_lines(const sensor_msgs::Image::ConstPtr& img_msg){
 	//of the detected lines
 	
 	Canny(cv_ptr->image, LinesImage, 50, 200, 3);	
+	cvtColor(LinesImage, displayImage, CV_GRAY2BGR);
 	HoughLinesP(LinesImage, lines, rho, theta, threshold, minLineLength, maxLineGap );
 	
 	if(display == true){
 		//now display the result by drawing the lines
-		cvtColor(LinesImage, displayImage, CV_GRAY2BGR);
 		for( size_t i = 0; i < lines.size(); i++ )
 		{
 		  Vec4i l = lines[i];
 		  line(displayImage, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,255), 3, CV_AA);
 		}    	
-	
 		imshow("source", cv_ptr->image);
 		imshow("detected lines", displayImage);
+		cv::waitKey(3);
     }
 	
 	//convert lines vector to Lines message type

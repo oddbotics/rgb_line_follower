@@ -72,7 +72,7 @@ void convert_to_mono::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
 	
 	//threshold based on the tape trying to follow
 	//void inRange(InputArray src, InputArray lowerb, InputArray upperb, OutputArray dst)
-	inRange(HSVImage,cv::Scalar(100,100,90),cv::Scalar(120,200,255),ThreshImage);
+	inRange(HSVImage,cv::Scalar(hue_min,sat_min,val_min),cv::Scalar(hue_max,sat_max,val_max),ThreshImage);
     
     // publish modified video stream
     cv_bridge::CvImage out_msg;
