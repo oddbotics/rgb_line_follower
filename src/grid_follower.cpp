@@ -1,21 +1,21 @@
 /*
- * \convert_to_mono.cpp
- * \takes a image and converts it to a trajectory for the robot to follow
+ * \grid_follower.cpp
+ * \takes an image and determines a trajectory based on the lines that it sees
  *
  * \author Chris Dunkers, CMU - cmdunkers@cmu.edu
- * \date October 31, 2014
+ * \date November 14, 2014
  */
 
-#include "rgb_line_follower/line_trrajectory_planner.h"
+#include "rgb_line_follower/grid_follower.h"
 
-line_trajectory_planner::line_trajectory_planner(){
+grid_follower::grid_follower(){
 	
   //the main node handle
   ros::NodeHandle nh;
 
   //grab the parameters
   ros::NodeHandle private_node_handle_("~");
-  private_node_handle_.param<std::string>("topic_lines", lines_topic, "/denoise");
+  private_node_handle_.param<std::string>("topic_image", image_topic, "/denoise");
   private_node_handle_.param<int>("rows", rows, 3);
   private_node_handle_.param<int>("cols", cols, 3);
   private_node_handle_.param<int>("threshold", threshold, 75);
@@ -23,22 +23,26 @@ line_trajectory_planner::line_trajectory_planner(){
   private_node_handle_.param<double>("max_angular", max_angular, 1.0);
     
   //initialize the publishers and subscribers
-  image_pub = nh.advertise<oddbot_msgs::Lines>("image_thin", 1000);
-  image_sub = nh.subscribe(image_topic, 1000, &convert_to_line::update_image, this);
-  // min and max hsv values values
-  
-  cv::namedWindow(OPENCV_WINDOW);
+  cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
+  image_sub = nh.subscribe(image_topic, 1000, &grid_follower::update_image, this); 
 }
 
-line_trajectory_planner::~line_trajectory_planner(){
-	cv::destroyWindow(OPENCV_WINDOW);
+void grid_follower::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
+	cv_bridge::CvImagePtr cv_ptr;
+    try
+    {
+      cv_ptr = cv_bridge::toCvCopy(img_msg, sensor_msgs::image_encodings::BGR8);
+    }
+    catch (cv_bridge::Exception& e)
+    {
+      ROS_ERROR("cv_bridge exception: %s", e.what());
+      return;
+    }
+    
+    cv_ptr->image.copyTo(image);
 }
 
-void line_trajectory_planner::update_lines(const oddbot_msgs::Lines::ConstPtr& lines_msg){
-	//store image
-}
-
-void line_trajectory_planner::find_trajectory(){
+void grid_follower::find_commands(){
 	//split the image up into RxC grid
 	vector<int> following_grid = ;
 	int r_step = image.rows/rows; //number of row pixels to include 	
@@ -54,7 +58,7 @@ void line_trajectory_planner::find_trajectory(){
 			// Note that this doesn't copy the data
 			cv::Mat croppedImage = image(myROI);
 			
-			if(cvCountNonZero(croppedImage)/croppedImage.total() > threshold){
+			if(cvCountNonZero(croppedImage)/croppedImage.total() > threshold/100){
 				count += 1;
 			}
 		}
@@ -88,7 +92,7 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "line_trajectory_planner");
 
-  line_trajectory_planner lines_to_traj = line_trajectory_planner();
+  grid_follower follower = grid_follower();
   
   ROS_INFO("line trajectory planner node started!");	
 
@@ -96,7 +100,7 @@ int main(int argc, char **argv)
 
   while (ros::ok())
   {    
-	lines_to_traj.find_trajectory();  
+	follower.find_commands();  
     ros::spinOnce();
     loop_rate.sleep();
   }

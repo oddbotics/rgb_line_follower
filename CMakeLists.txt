@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   oddbot_msgs
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -113,6 +114,8 @@ add_executable(zhang_suen_thinning src/zhang_suen_thinning.cpp)
 add_executable(guo_hall_thinning src/guo_hall_thinning.cpp)
 add_executable(thin_to_lines src/thin_to_lines.cpp)
 add_executable(denoise src/denoise.cpp)
+add_executable(grid_follower src/grid_follower.cpp)
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(rgb_line_follower_node rgb_line_follower_generate_messages_cpp)
@@ -143,6 +146,10 @@ target_link_libraries(thin_to_lines
 )
 
 target_link_libraries(denoise
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(grid_follower
   ${catkin_LIBRARIES}
 )
 #############
