@@ -36,6 +36,7 @@ thin_to_lines::~thin_to_lines(){
 }
 
 void thin_to_lines::update_lines(const sensor_msgs::Image::ConstPtr& img_msg){
+	ROS_INFO("GETTING LINES");
     cv_bridge::CvImagePtr cv_ptr;
     try
     {
@@ -87,6 +88,7 @@ void thin_to_lines::update_lines(const sensor_msgs::Image::ConstPtr& img_msg){
 
 
     lines_pub.publish(lines_msg);
+    ROS_INFO("GOT LINES");
 }
 
 int main(int argc, char **argv)
