@@ -44,7 +44,9 @@ void grid_follower::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
 
 void grid_follower::find_commands(){
 	//split the image up into RxC grid
-	vector<int> following_grid = ;
+	vector<int> following_grid;
+	bool row_white = false;
+	vector<int> white_row;
 	int r_step = image.rows/rows; //number of row pixels to include 	
 	int c_step = image.cols/cols; //number of col pixels to include 
 	int count = 0;
@@ -57,14 +59,17 @@ void grid_follower::find_commands(){
 			// Crop the full image to that image contained by the rectangle myROI
 			// Note that this doesn't copy the data
 			cv::Mat croppedImage = image(myROI);
-			
-			if(cvCountNonZero(croppedImage)/croppedImage.total() > threshold/100){
+			//CvMat croppedArray;
+			//CvMat croppedImg = croppedImage;
+			//cvTranspose(&croppedImg, &croppedArray);
+			if(cvCountNonZero(&croppedImage)/croppedImage.total() > threshold/100){
 				count += 1;
 			}
 		}
 		following_grid.push_back(count);
 	}
-		
+	
+	//determine when to stop
 	
 	//figure out if one side has more black than white or vice versa
 	int left = 0;

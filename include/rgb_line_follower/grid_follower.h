@@ -26,10 +26,10 @@ static const std::string OPENCV_WINDOW = "Image window";
 using namespace std;
 using namespace cv;
 
-class line_trajectory_planner
+class grid_follower
 {
   public:
-    line_trajectory_planner(); 
+    grid_follower(); 
     
     void find_commands();
 
