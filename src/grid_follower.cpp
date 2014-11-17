@@ -15,7 +15,7 @@ grid_follower::grid_follower(){
 
   //grab the parameters
   ros::NodeHandle private_node_handle_("~");
-  private_node_handle_.param<std::string>("topic_image", image_topic, "/image_denoised");
+  private_node_handle_.param<std::string>("image_topic_bw", image_topic, "/image_denoised");
   private_node_handle_.param<int>("rows", rows, 3);
   private_node_handle_.param<int>("cols", cols, 3);
   private_node_handle_.param<int>("threshold", threshold, 75);
@@ -23,7 +23,7 @@ grid_follower::grid_follower(){
   private_node_handle_.param<double>("max_angular", max_angular, 1.0);
     
   //initialize the publishers and subscribers
-  cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
+  cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_follow_line", 1000);
   image_sub = nh.subscribe(image_topic, 1000, &grid_follower::update_image, this); 
 }
 
@@ -100,11 +100,11 @@ void grid_follower::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
 		}
 	}
 	
-	ROS_INFO("left: %d", left);
-	ROS_INFO("right: %d", right);
-	ROS_INFO("difference: %d", left-right);
-	ROS_INFO("divisor: %d", (floor(cols/2)*rows));
-	ROS_INFO("%f", (float)((left-right)/(floor(cols/2)*rows)));
+	//ROS_INFO("left: %d", left);
+	//ROS_INFO("right: %d", right);
+	//ROS_INFO("difference: %d", left-right);
+	//ROS_INFO("divisor: %d", (floor(cols/2)*rows));
+	//ROS_INFO("%f", (float)((left-right)/(floor(cols/2)*rows)));
 	
 	//turn to make the sides have equal sum
 	geometry_msgs::Twist command;
@@ -132,7 +132,7 @@ void grid_follower::find_commands(){
 
 			// Crop the full image to that image contained by the rectangle myROI
 			// Note that this doesn't copy the data
-			ROS_INFO("Hi %d", image.channels());
+			//ROS_INFO("Hi %d", image.channels());
 			nonZero = countNonZero(image(myROI));
 			
 			if(((float)nonZero)/((float)image(myROI).total()) > threshold/100.0){
@@ -162,7 +162,7 @@ void grid_follower::find_commands(){
 	geometry_msgs::Twist command;
 	command.linear.x = linear;
 	command.angular.z = max_angular*((left-right)/(floor(cols/2)*rows));
-	ROS_INFO("%f", command.angular.z);
+	//ROS_INFO("%f", command.angular.z);
 	
 	cmd_pub.publish(command);
 }

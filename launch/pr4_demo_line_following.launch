@@ -1,0 +1,51 @@
+<launch>    
+	<arg name="use_kinect" default="true" />
+	<arg name="use_xtion" default="false" />
+    <arg name="image_topic_hsv" default="/camera/rgb/image_raw" />
+    <arg name="hue_min" default="100" />
+    <arg name="hue_max" default="120" />
+    <arg name="sat_min" default="100" />
+    <arg name="sat_max" default="200" />
+	<arg name="val_min" default="90" />
+    <arg name="val_max" default="255" />
+	<arg name="image_topic_denoise" default="/image_hsv" />
+	<arg name="image_topic_bw" default="/image_denoised" />
+	<arg name="rows" default="5" />
+	<arg name="cols" default="5" />
+	<arg name="threshold" default="50" />
+	<arg name="linear" default="1.0" />
+	<arg name="max_angular" default="1.0" />
+    
+	<group if="$(arg use_kinect)">
+		<include file="$(find freenect_launch)/launch/examples/freenect-registered-xyzrgb.launch" />
+	</group>
+
+	<group if="$(arg use_xtion)">
+		<include file="$(find openni2_launch)/launch/openni2.launch" />
+	</group>
+
+
+    <node pkg="rgb_line_follower" type="convert_to_mono" name="convert_to_mono" output="screen">
+        <param name="image_topic_hsv" type="string" value="$(arg image_topic_hsv)" />
+        <param name="hue_max" type="int" value="$(arg hue_max)" />
+        <param name="hue_min" type="int" value="$(arg hue_min)" />
+		<param name="sat_max" type="int" value="$(arg sat_max)" />
+        <param name="sat_min" type="int" value="$(arg sat_min)" />
+		<param name="val_max" type="int" value="$(arg val_max)" />
+        <param name="val_min" type="int" value="$(arg val_min)" />
+    </node>
+	
+	<node pkg="rgb_line_follower" type="denoise" name="denoise" output="screen">
+		<param name="image_topic_denoise" type="string" value="$(arg image_topic_denoise)" />
+	</node>
+
+	<node pkg="rgb_line_follower" type="grid_follower" name="grid_follower" output="screen">
+		<param name="image_topic_bw" type="string" value="$(arg image_topic_bw)" />
+		<param name="rows" type="int" value="$(arg rows)" />
+		<param name="cols" type="int" value="$(arg cols)" />
+		<param name="threshold" type="int" value="$(arg threshold)" />
+		<param name="linear" type="double" value="$(arg linear)" />
+		<param name="max_angular" type="double" value="$(arg max_angular)" />
+	</node>
+
+</launch>
