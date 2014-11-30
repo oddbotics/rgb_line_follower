@@ -153,8 +153,10 @@ void grid_follower::find_commands(){
 	for(int c = 0; c < cols; c++){
 		if(c < upper_left){
 			left += following_grid[c];
+			ROS_INFO("c: %d    left : %d", c, left);
 		} else if(c >= lower_right){
 			right += following_grid[c];
+			ROS_INFO("c: %d    right: %d", c, right);
 		}
 	}
 	
