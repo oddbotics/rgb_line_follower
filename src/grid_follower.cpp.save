@@ -3,8 +3,7 @@
  * \takes an image and determines a trajectory based on the lines that it sees
  *
  * \author Chris Dunkers, CMU - cmdunkers@cmu.edu
- * \date November 14, 2014
- */
+ * \date No
 
 #include "rgb_line_follower/grid_follower.h"
 
@@ -21,21 +20,11 @@ grid_follower::grid_follower(){
   private_node_handle_.param<int>("threshold", threshold, 75);
   private_node_handle_.param<double>("linear", linear, 1.0);
   private_node_handle_.param<double>("max_angular", max_angular, 1.0);
-  private_node_handle_.param<double>("angular", angular, 1.0);
-  private_node_handle_.param<double>("tilt_angle", tilt_angle, -0.36);
-  private_node_handle_.param<bool>("isCCW", isCCW, true);
     
   //initialize the publishers and subscribers
   cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
-  camera_pub = nh.advertise<oddbot_msgs::HerkulexCommand>("perce_herkulex_command" , 1000, true);
-  image_sub = nh.subscribe(image_topic, 1000, &grid_follower::update_image, this); 
-  
-  //tilt the camera up
-  oddbot_msgs::HerkulexCommand camera_command;
-  camera_command.name.push_back(2);
-  camera_command.position.push_back(tilt_angle);
-
-  camera_pub.publish(camera_command);
+  image_sub = nh.subscribe(image_topic, 1000, &grid_follower::update_image, this);
+  camera_pub = nh.subscribe(/perce_herkulex_command, 1000 & 
 }
 
 void grid_follower::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
@@ -121,17 +110,64 @@ void grid_follower::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
 	//turn to make the sides have equal sum
 	geometry_msgs::Twist command;
 	command.linear.x = linear;
-	if(left == 0 && right == 0){
-           if(isCCW){
-	       command.angular.z = angular;
-           } else {
-               command.angular.z = -1*angular;
-           }
-        } else {
-           command.angular.z = max_angular*((left-right)/(floor(cols/2)*rows));
-	}
+	command.angular.z = max_angular*((left-right)/(floor(cols/2)*rows));
+	
 	cmd_pub.publish(command);
 	//---------------------------------------------
+}
+
+void grid_follower::find_commands(){
+	//split the image up into RxC grid
+	vector<int> following_grid;
+	bool row_white = false;
+	vector<int> white_row;
+	int r_step = image.rows/rows; //number of row pixels to include 	
+	int c_step = image.cols/cols; //number of col pixels to include 
+	int count = 0;
+	int nonZero = 0;
+	for(int c = 0; c < cols; c++){
+		count = 0;
+		for(int r = 0; r < rows; r++){
+			// Setup a rectangle to define your region of interest
+			cv::Rect myROI(r*r_step, c*c_step, (r+1)*r_step, (c+1)*c_step);
+
+			// Crop the full image to that image contained by the rectangle myROI
+			// Note that this doesn't copy the data
+			//ROS_INFO("Hi %d", image.channels());
+			nonZero = countNonZero(image(myROI));
+			
+			if(((float)nonZero)/((float)image(myROI).total()) > threshold/100.0){
+				count += 1;
+			}
+		}
+		following_grid.push_back(count);
+	}
+	
+	//determine when to stop
+	
+	//figure out if one side has more black than white or vice versa
+	int left = 0;
+	int right = 0;
+	int upper_left = floor(cols/2);
+	int lower_right = ceil(cols/2);
+	
+	for(int c = 0; c < cols; c++){
+		if(c < upper_left){
+			left += following_grid[c];
+                        ROS_INFO("c: %d  --  left:  %d", c, left);
+		} else if(c >= lower_right){
+			right += following_grid[c];
+			ROS_INFO("c: %d  --  right: %d", c, right);
+		}
+	}
+	
+	//turn to make the sides have equal sum
+	geometry_msgs::Twist command;
+	command.linear.x = linear;
+	command.angular.z = max_angular*((left-right)/(floor(cols/2)*rows));
+	//ROS_INFO("%f", command.angular.z);
+	
+	cmd_pub.publish(command);
 }
 
 int main(int argc, char **argv)

@@ -8,16 +8,15 @@
 #ifndef GRID_FOLLOWER_H_
 #define GRID_FOLLOWER_H_
 
-#include "ros/ros.h"
+#include <ros/ros.h>
 #include "sensor_msgs/Image.h"
 #include "geometry_msgs/Twist.h"
-#include <ros/ros.h>
+#include "oddbot_msgs/HerkulexCommand.h"
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <std_msgs/Empty.h>
 #include "opencv2/core/core.hpp"
 
 static const std::string OPENCV_WINDOW = "Image window";
@@ -39,11 +38,14 @@ class grid_follower
 	int threshold;
     double linear;
     double max_angular;
-    
-    cv::Mat image;
+    double angular;
+    double tilt_angle;    
+    bool isCCW;
+cv::Mat image;
     
     ros::Subscriber image_sub;
     ros::Publisher cmd_pub;
+    ros::Publisher camera_pub;
 
     void update_image(const sensor_msgs::Image::ConstPtr& img_msg);
 };

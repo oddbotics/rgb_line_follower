@@ -1,20 +1,23 @@
 <launch>    
-	<arg name="use_kinect" default="true" />
+	<arg name="use_kinect" default="false" />
 	<arg name="use_xtion" default="false" />
-    <arg name="image_topic_hsv" default="/camera/rgb/image_raw" />
-    <arg name="hue_min" default="100" />
-    <arg name="hue_max" default="120" />
-    <arg name="sat_min" default="100" />
-    <arg name="sat_max" default="200" />
+        <arg name="image_topic_hsv" default="/camera/rgb/image_raw" />
+        <arg name="hue_min" default="100" />
+        <arg name="hue_max" default="120" />
+        <arg name="sat_min" default="100" />
+        <arg name="sat_max" default="200" />
 	<arg name="val_min" default="90" />
-    <arg name="val_max" default="255" />
+        <arg name="val_max" default="255" />
 	<arg name="image_topic_denoise" default="/image_hsv" />
 	<arg name="image_topic_bw" default="/image_denoised" />
-	<arg name="rows" default="5" />
-	<arg name="cols" default="5" />
+	<arg name="rows" default="10" />
+	<arg name="cols" default="21" />
 	<arg name="threshold" default="50" />
-	<arg name="linear" default="1.0" />
-	<arg name="max_angular" default="1.0" />
+	<arg name="linear" default="0.1" />
+	<arg name="max_angular" default="0.2" />
+	<arg name="angular" default="0.05"/>
+        <arg name="tilt_angle" default="-0.36"/>
+        <arg name="isCCW" default="true"/>
     
 	<group if="$(arg use_kinect)">
 		<include file="$(find freenect_launch)/launch/examples/freenect-registered-xyzrgb.launch" />
@@ -46,6 +49,9 @@
 		<param name="threshold" type="int" value="$(arg threshold)" />
 		<param name="linear" type="double" value="$(arg linear)" />
 		<param name="max_angular" type="double" value="$(arg max_angular)" />
+                <param name="angular" type="double" value="$(arg angular)" />
+                <param name="tilt_angle" type="double" value="$(arg tilt_angle)"/>
+                <param name="isCCW" type="bool" value="$(arg isCCW)"/>
 	</node>
 
-</launch>
+</launch>   
