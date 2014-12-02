@@ -130,6 +130,31 @@ void grid_follower::update_image(const sensor_msgs::Image::ConstPtr& img_msg){
         } else {
            command.angular.z = max_angular*((left-right)/(floor(cols/2)*rows));
 	}
+	
+	//determine when to stop
+	
+	//figure out if one side has more black than white or vice versa
+	int left = 0;
+	int right = 0;
+	int upper_left = floor(cols/2);
+	int lower_right = ceil(cols/2);
+	
+	for(int c = 0; c < cols; c++){
+		if(c < upper_left){
+			left += following_grid[c];
+			ROS_INFO("c: %d    left : %d", c, left);
+		} else if(c >= lower_right){
+			right += following_grid[c];
+			ROS_INFO("c: %d    right: %d", c, right);
+		}
+	}
+	
+	//turn to make the sides have equal sum
+	geometry_msgs::Twist command;
+	command.linear.x = linear;
+	command.angular.z = max_angular*((left-right)/(floor(cols/2)*rows));
+	//ROS_INFO("%f", command.angular.z);
+	
 	cmd_pub.publish(command);
 	//---------------------------------------------
 }

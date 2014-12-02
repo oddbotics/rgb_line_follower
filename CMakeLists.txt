@@ -115,6 +115,7 @@ add_executable(guo_hall_thinning src/guo_hall_thinning.cpp)
 add_executable(thin_to_lines src/thin_to_lines.cpp)
 add_executable(denoise src/denoise.cpp)
 add_executable(grid_follower src/grid_follower.cpp)
+add_executable(debug_grid_follower src/debug_grid_follower.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -150,6 +151,10 @@ target_link_libraries(denoise
 )
 
 target_link_libraries(grid_follower
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(debug_grid_follower
   ${catkin_LIBRARIES}
 )
 #############
