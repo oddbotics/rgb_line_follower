@@ -35,7 +35,7 @@ convert_to_mono::convert_to_mono(){
   image_sub = nh.subscribe(image_topic, 1000, &convert_to_mono::update_image, this);
   // min and max hsv values values
   
-  cv::namedWindow(OPENCV_WINDOW);
+ // cv::namedWindow(OPENCV_WINDOW);
 }
 
 convert_to_mono::~convert_to_mono(){

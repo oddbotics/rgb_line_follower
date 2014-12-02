@@ -24,7 +24,7 @@ denoise::denoise(){
   image_sub = nh.subscribe(image_topic, 1000, &denoise::update_image, this);
   // min and max hsv values values
   
-  cv::namedWindow(OPENCV_WINDOW);
+ // cv::namedWindow(OPENCV_WINDOW);
 }
 
 denoise::~denoise(){
